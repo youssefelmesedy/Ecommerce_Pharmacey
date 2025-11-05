@@ -33,6 +33,7 @@ The project follows the **Clean Architecture** principle to ensure clear separat
 
 ┣ 📂 Pharmacy.Domain → Core Domain Layer (Entities, ValueObjects, Enums)
 
+┣ 📂 Pharmacy.Shared → Core Sared Layer ()
 ---
 
 ## 🚀 Key Features
