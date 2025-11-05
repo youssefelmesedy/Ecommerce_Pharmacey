@@ -1,6 +1,6 @@
 <!-- 🌟 PROJECT BANNER -->
 <p align="center">
-  <img src="https://github.com/youssefelmesedy/Ecommerce_Pharmacey/main/.github/images/banner.png" alt="Ecommerce Pharmacy Banner" width="100%" />
+  <img src="https://github.com/youssefelmesedy/Ecommerce_Pharmacey/main/.github/images/images/banner.png" alt="Ecommerce Pharmacy Banner" width="100%" />
 </p>
 <h1 align="center">💊 Ecommerce_Pharmacy</h1>
 
