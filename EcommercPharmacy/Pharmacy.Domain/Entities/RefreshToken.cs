@@ -10,6 +10,7 @@ public class RefreshToken
     public DateTime? RevokedAtUtc { get; set; }   // ← التعديل هنا
     public string? RevokedByIp { get; set; }
     public string? ReplacedByToken { get; set; }
+    public string? RevokedReason { get; set; }
 
     public bool IsActive => RevokedAtUtc == null && !IsExpired;
     public bool IsExpired => DateTime.UtcNow >= ExpiresAtUtc;

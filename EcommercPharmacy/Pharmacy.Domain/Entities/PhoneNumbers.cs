@@ -2,7 +2,7 @@
 public class PhoneNumbers 
 {
     public Guid Id { get; set; }
-    public string phoneNumber { get; set; }
+    public string? phoneNumber { get; set; }
     public bool IsPrimary { get; set; }
 
     // Foreign Key

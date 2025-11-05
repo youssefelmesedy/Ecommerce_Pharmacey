@@ -255,6 +255,9 @@ namespace Pharmacy.Infarstructure.Migrations
                     b.Property<string>("RevokedByIp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RevokedReason")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -302,6 +305,9 @@ namespace Pharmacy.Infarstructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -328,6 +334,47 @@ namespace Pharmacy.Infarstructure.Migrations
                         .HasDatabaseName("IX_Users_Role");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Pharmacy.Domain.Entities.UserToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreateAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUse")
+                        .HasColumnType("bit")
+                        .HasColumnName("IsUse");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<int>("TokenType")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserToken_Token");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_UserToken_UserId");
+
+                    b.ToTable("UserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Pharmacy.Domain.Entities.Order", b =>
@@ -404,6 +451,17 @@ namespace Pharmacy.Infarstructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Pharmacy.Domain.Entities.UserToken", b =>
+                {
+                    b.HasOne("Pharmacy.Domain.Entities.User", "User")
+                        .WithMany("UserTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Pharmacy.Domain.Entities.Category", b =>
                 {
                     b.Navigation("products");
@@ -428,6 +486,8 @@ namespace Pharmacy.Infarstructure.Migrations
                     b.Navigation("PhoneNumbers");
 
                     b.Navigation("RefreshTokens");
+
+                    b.Navigation("UserTokens");
                 });
 #pragma warning restore 612, 618
         }

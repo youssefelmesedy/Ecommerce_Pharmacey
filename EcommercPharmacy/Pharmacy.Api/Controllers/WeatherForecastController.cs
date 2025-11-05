@@ -1,4 +1,6 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Pharmacy.Controllers
 {
@@ -29,5 +31,49 @@ namespace Pharmacy.Controllers
             })
             .ToArray();
         }
+        [Authorize]
+        [HttpGet("whoami")]
+        public IActionResult WhoAmI()
+        {
+            return Ok(new
+            {
+                User.Identity?.Name,
+                Role = User.FindFirst(ClaimTypes.Role)?.Value,
+                Email = User.FindFirst(ClaimTypes.Email)?.Value
+            });
+        }
+
+
+        [HttpGet("long-operation")]
+        public async Task<IActionResult> LongOperation(CancellationToken cancellationToken)
+        {
+            Console.WriteLine("🟢 Started Program");
+
+            var items = Enumerable.Range(1, 10).ToList();
+            var finishedSteps = new List<int>();
+            int currentStep = 0;
+
+            try
+            {
+                foreach (var step in items)
+                {
+                    currentStep = step; // نحفظ الخطوة الحالية قبل الـ delay
+
+                    await Task.Delay(1000, cancellationToken);
+
+                    finishedSteps.Add(step);
+                    Console.WriteLine($"⏳ Step num: {step}");
+                }
+
+                Console.WriteLine("✅ Successfully Completed Program");
+                return Ok($"Finished steps: {string.Join(", ", finishedSteps)}");
+            }
+            catch (TaskCanceledException)
+            {
+                Console.WriteLine("🛑 Canceled Program");
+                return StatusCode(499, $"Canceled by user at step: {currentStep}. Finished steps: {string.Join(", ", finishedSteps)}");
+            }
+        }
+
     }
 }
