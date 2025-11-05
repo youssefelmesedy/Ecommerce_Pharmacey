@@ -1,8 +1,7 @@
 <!-- 🌟 PROJECT BANNER -->
 <p align="center">
-  <img src="https://raw.githubusercontent.com/youssefelmesedy/Ecommerce_Pharmacy/main/.github/Images/banner.png" alt="Ecommerce Pharmacy Banner" width="100%" />
+  <img src="https://github.com/youssefelmesedy/Ecommerce_Pharmacey/main/.github/images/banner.png" alt="Ecommerce Pharmacy Banner" width="100%" />
 </p>
-
 <h1 align="center">💊 Ecommerce_Pharmacy</h1>
 
 <p align="center">
@@ -12,9 +11,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/YOUR_USERNAME/Ecommerce_Pharmacy/stargazers"><img src="https://img.shields.io/github/stars/YOUR_USERNAME/Ecommerce_Pharmacy?color=yellow" alt="Stars Badge"/></a>
-  <a href="https://github.com/YOUR_USERNAME/Ecommerce_Pharmacy/network/members"><img src="https://img.shields.io/github/forks/YOUR_USERNAME/Ecommerce_Pharmacy?color=blue" alt="Forks Badge"/></a>
-  <a href="https://github.com/YOUR_USERNAME/Ecommerce_Pharmacy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/YOUR_USERNAME/Ecommerce_Pharmacy?color=green" alt="License Badge"/></a>
+  <a href="https://github.com/youssefelmesedy/Ecommerce_Pharmacy/stargazers"><img src="https://img.shields.io/github/stars/youssefelmesedy/Ecommerce_Pharmacy?color=yellow" alt="Stars Badge"/></a>
+  <a href="https://github.com/youssefelmesedy/Ecommerce_Pharmacy/network/members"><img src="https://img.shields.io/github/forks/youssefelmesedy/Ecommerce_Pharmacy?color=blue" alt="Forks Badge"/></a>
+  <a href="https://github.com/youssefelmesedy/Ecommerce_Pharmacy/blob/main/LICENSE"><img src="https://img.shields.io/github/license/youssefelmesedy/Ecommerce_Pharmacy?color=green" alt="License Badge"/></a>
   <a href="#"><img src="https://img.shields.io/badge/.NET-9.0-blueviolet" alt=".NET Version"/></a>
 </p>
 
