@@ -24,17 +24,14 @@
 The project follows the **Clean Architecture** principle to ensure clear separation of concerns, scalability, and maintainability.
 
 📦 Pharmacy
+
 ┣ 📂 Pharmacy.Api → Presentation Layer (Controllers, Middlewares, Swagger)
 
-┣ 📂 Pharmacy.Application → Application Layer (CQRS, Commands, Queries, Validators)
-
-┣ 📂 Pharmacy.Domain → Core Domain Layer (Entities, ValueObjects, Enums)
+┣ 📂 Pharmacy.Application → Application Layer (CQRS, Commands, Queries, Validators, DTO, Helpers, Services)
 
 ┣ 📂 Pharmacy.Infrastructure → Infrastructure Layer (EF Core, Repositories, Configurations)
 
-┣ 📂 Pharmacy.Design → Design Patterns Layer (Strategies, Specifications, etc.)
-
-┣ 📂 Pharmacy.Shared → Shared Utilities & DTOs
+┣ 📂 Pharmacy.Domain → Core Domain Layer (Entities, ValueObjects, Enums)
 
 ---
 
