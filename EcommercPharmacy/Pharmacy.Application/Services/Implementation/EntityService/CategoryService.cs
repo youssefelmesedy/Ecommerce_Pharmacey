@@ -25,9 +25,9 @@ public class CategoryService : GenericService<Category>, ICategoryService
             {
                 OrderBy = c => c.OrderBy(c => c.Name),
                 Includes = new List<Expression<Func<Category, object>>>
-        {
-            c => c.products!
-        }
+                {
+                  c => c.products!
+                }
             };
 
             var key = CacheKeyBuilder.BuilderCacheKey(_cachePrefix, "GetCategoryIncludeProducts", queryOptions);

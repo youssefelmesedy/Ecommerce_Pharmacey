@@ -2,10 +2,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Pharmacy.Application.Dtos.Authentication;
-using Pharmacy.Application.Features.Authentication.Command.Login;
-using Pharmacy.Application.Features.Authentication.Command.Logout;
-using Pharmacy.Application.Features.Authentication.Command.RefreshToken;
-using Pharmacy.Application.Features.Authentication.Command.RegisterCommand;
+using Pharmacy.Application.Features.Authentication.EmailVerification;
+using Pharmacy.Application.Features.Authentication.ForgotPassword;
+using Pharmacy.Application.Features.Authentication.Login;
+using Pharmacy.Application.Features.Authentication.Logout;
+using Pharmacy.Application.Features.Authentication.RefreshToken;
+using Pharmacy.Application.Features.Authentication.Registration;
+using Pharmacy.Application.Features.Authentication.ResetPassword;
+using Pharmacy.Application.Features.Authentication.SendEmailVerification;
 
 namespace Pharmacy.Api.Controllers.Authentication
 {
@@ -85,6 +89,62 @@ namespace Pharmacy.Api.Controllers.Authentication
                 return BadRequest(result);
 
            SetRefreshTokenInCookie(string.Empty, default);
+
+            return Ok(result);
+        }
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto, CancellationToken cancellationToken)
+        {
+            var command = new ForgotPasswordCommand(dto);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result.Succeeded)
+                return BadRequest(result);
+
+
+            return Ok(result);
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto, CancellationToken cancellationToken)
+        {
+            var command = new ResetPasswordCommand(dto);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result.Succeeded)
+                return BadRequest(result);
+
+
+            return Ok(result);
+        }
+
+        [HttpGet("SendEmailVerification")]
+        public async Task<IActionResult> SendEmailVerification([FromBody] SendEmailVerificationDto dto, CancellationToken cancellationToken)
+        {
+            var command = new SendEmailVerificationCommand(dto);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result.Succeeded)
+                return BadRequest(result);
+
+
+            return Ok(result);
+        }
+
+        [HttpPost("EmailVerification")]
+        public async Task<IActionResult> EmailVerification([FromBody] EmailVerificationDto dto, CancellationToken cancellationToken)
+        {
+            var command = new EmailVerificationcommand(dto);
+
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result.Succeeded)
+                return BadRequest(result);
+
 
             return Ok(result);
         }

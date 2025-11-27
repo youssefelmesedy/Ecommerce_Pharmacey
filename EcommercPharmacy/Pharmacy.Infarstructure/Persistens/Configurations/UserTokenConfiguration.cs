@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
 
@@ -13,15 +12,11 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
         builder.HasKey(k => k.Id);
 
         builder.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .Metadata.SetBeforeSaveBehavior(PropertySaveBehavior.Ignore);
+            .ValueGeneratedOnAdd(); 
 
         builder.Property(e => e.Token)
             .IsRequired()
-            .HasMaxLength(256);
-
-        builder.Property(e => e.ExpiresAt)
-            .IsRequired();
+            .HasMaxLength(1000);
 
         builder.Property(e => e.ExpiresAt)
             .IsRequired();
@@ -46,3 +41,4 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
             .HasDatabaseName("IX_UserToken_UserId");
     }
 }
+

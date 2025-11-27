@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Pharmacy.Infarstructure.Cacheing;
 using Pharmacy.Infarstructure.Rpositoryies;
 using Pharmacy.Infarstructure.Services.InterFaces;
@@ -87,7 +88,7 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
     }
 
     // 🔍 Any / Count
-    public async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
+    public virtual async Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -114,17 +115,19 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
     }
 
     // ✳️ CRUD
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<int> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         try
         {
             await _unitOfWork.Repository<TEntity>().AddAsync(entity, cancellationToken);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var effected = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
 
             _logger.LogInformation($"🟢 Added new {typeof(TEntity).Name}");
+
+            return effected;
         }
         catch (Exception ex)
         {
@@ -133,16 +136,18 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
         }
     }
 
-    public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         try
         {
             await _unitOfWork.Repository<TEntity>().Update(entity);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
+           var effected = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (effected > 0)
+                await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
             _logger.LogInformation($"🟡 Updated {typeof(TEntity).Name}");
+
+            return effected;
         }
         catch (Exception ex)
         {
@@ -151,17 +156,19 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
         }
     }
 
-    public async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         try
         {
             await _unitOfWork.Repository<TEntity>().Delete(entity);
 
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            var effected = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
 
             _logger.LogInformation($"🔴 Deleted {typeof(TEntity).Name}");
+
+            return effected;
         }
         catch (Exception ex)
         {

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Pharmacy.Application.Dtos.Categories;
+﻿namespace Pharmacy.Application.Dtos.Categories;
 public class CreateCategoryDto
 {
     public string? Name { get; set; }

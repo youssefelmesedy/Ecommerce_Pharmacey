@@ -14,7 +14,7 @@ public interface IGenericService<TEntity> where TEntity : class
     Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate = null, CancellationToken cancellationToken = default);
 
     // 🔹 CRUD
-    Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
-    Task DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task<int> AddAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task<int> UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task<int> DeleteAsync(TEntity entity, CancellationToken cancellationToken = default);
 }

@@ -4,7 +4,6 @@ using Pharmacy.Api.Middlewares;
 using Pharmacy.Api.SwaggerExtenion;
 using Pharmacy.Application;
 using Pharmacy.Infarstructure;
-using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +12,7 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile("appsettings.JWTSettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile("appsettings.EmailSettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile("appsettings.EmailSetting.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 // Register application services

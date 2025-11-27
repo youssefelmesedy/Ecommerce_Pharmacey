@@ -17,4 +17,3 @@ public class ResultDto<T>
     public static ResultDto<T> Failure(string Message, object? error = null, int statusCode = 400)
          => new() { Succeeded = false, Message = Message, Error = error, StatusCode = statusCode};
 }
-

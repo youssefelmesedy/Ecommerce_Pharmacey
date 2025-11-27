@@ -24,7 +24,7 @@ public class UserTokenService : GenericService<UserTokenService>, IUserTokenServ
             var queryOptions = new QueryOptions<UserToken>
             {
                 Filter = ut => ut.Token == token,
-                AsNoTracking = true,
+                AsNoTracking = false,
                 Includes = new List<Expression<Func<UserToken, object>>>
                 {
                     ut => ut.User!
@@ -71,6 +71,7 @@ public class UserTokenService : GenericService<UserTokenService>, IUserTokenServ
             throw new ArgumentNullException(nameof(userToken));
 
         await _unitOfWork.Repository<UserToken>().Update(userToken);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return true;

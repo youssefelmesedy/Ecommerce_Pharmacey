@@ -11,7 +11,7 @@ using Pharmacy.Application.Features.Categories.Queries.GetProductWithCategory;
 
 namespace Pharmacy.Api.Controllers.ControllerCategories
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase

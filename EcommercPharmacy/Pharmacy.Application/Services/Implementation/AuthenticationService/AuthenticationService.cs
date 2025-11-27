@@ -287,62 +287,158 @@ public class AuthenticationService : IAuthenticationService
     }
     #endregion
 
+    #region Send Email VerificationAsync
+    public async Task<(string, bool)> SendEmailVerificationAsync(SendEmailVerificationDto dto, CancellationToken cancellationToken = default)
+    {
+        _logger.LogSection("Send Email verification", $"🔍 Send Email verification requested for: {dto.Email}");
+
+        try
+        {
+            if (string.IsNullOrEmpty(dto.Email))
+            {
+                _logger.LogSection("Send Email verification INFO", "Email is empty.", LogLevel.Warning);
+                return ("Email is Empty. ",false);
+            }
+
+            if (string.IsNullOrEmpty(dto.BaseURL))
+            {
+                _logger.LogSection("Send Email verification INFO", "Frontend reset URL is missing.", LogLevel.Warning);
+                return ("Frontend reset URL is missing.", false);
+            }
+
+            var user = await _userService.GetUserByEmailAsync(dto.Email, cancellationToken);
+
+            if (user == null )
+            {
+                _logger.LogSection("Send Email verification INFO", $"User with email {dto.Email} not found. Returning success to avoid email enumeration.");
+                return ("Not Found User With Email. ", false);
+            }
+
+            if(user.IsActive)
+            {
+                _logger.LogSection("Send Email verification INFO", $"User with email {dto.Email} not found. Returning success to avoid email enumeration.");
+                return ("Email Ready Is Active", true);
+            }
+
+            var resetToken = await _jwtTokenGenerator.GeneratingShortTermTokens(user, "Email verification");
+
+            //Add Generated Sort Term Tokens
+            var userToken = new UserToken
+            {
+                UserId = user.Id,
+                Token = resetToken,
+                CreateAt = DateTime.UtcNow,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(15),
+                IsUse = false,
+                TokenType = TokenType.VerificationEmail,
+            };
+
+            await _userTokenService.CreateUserTokenAsync(userToken, cancellationToken);
+
+            var encodedToken = Uri.EscapeDataString(resetToken);
+
+            var encodedEmail = Uri.EscapeDataString(user.Email);
+
+            var builder = new UriBuilder(dto.BaseURL);
+
+            builder.Query = $"email={encodedEmail}&token={encodedToken}";
+
+            var resetLink = builder.Uri.ToString();
+
+            _logger.LogSection("Send Email verification", $"🔗 Reset link generated for {dto.Email} (hidden for security).");
+
+            await _emailService.SendEmailVerificationAsync(user.Email, resetLink);
+            _logger.LogSection("Send Email verification", $"📧 Password reset email sent to {dto.Email}");
+
+            return ("Email link sent. ", true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogSection("FORGOT PASSWORD ERROR", $"❌ Error while processing forgot password for {dto.Email}: {ex.Message}", LogLevel.Error);
+            throw;
+        }
+    }
+    #endregion
+
     #region EmailVerification
+    public async Task<bool> EmailVerificationAsync(EmailVerificationDto dto, CancellationToken cancellationToken = default)
+    {
+        _logger.LogSection("EMAIL VERIFICATION", $"📧 Email verification attempt for token.");
+        try
+        {
+            if (string.IsNullOrEmpty(dto.Token))
+            {
+                _logger.LogSection("EMAIL VERIFICATION ERROR", "Token is missing.", LogLevel.Warning);
+                return false;
+            }
+
+            var userToken = await _userTokenService.GetUserTokenByToken(dto.Token, cancellationToken);
+
+            if (userToken == null || userToken.IsUse || userToken.ExpiresAt < DateTime.UtcNow || userToken.User is null)
+            {
+                _logger.LogSection("EMAIL VERIFICATION ERROR", "Invalid or expired token.", LogLevel.Warning);
+                return false;
+            }
+
+            userToken.User.IsActive = true;
+
+            userToken.IsUse = true;
+
+            await _userTokenService.UpdateUserTokenAsync(userToken, cancellationToken);
+
+            _logger.LogSection("EMAIL VERIFICATION SUCCESS", $"✅ Email verified successfully for {userToken.User.Email}.");
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogSection("EMAIL VERIFICATION ERROR", $"❌ Error during email verification: {ex.Message}", LogLevel.Error);
+            throw;
+        }
+    }
     #endregion
 
     #region 🔐 ResetPassword
-    public async Task<bool> ResetPasswordAsync(string email, string token, string newPassword, string ipAddress, CancellationToken cancellationToken = default)
+    public async Task<bool> ResetPasswordAsync(ResetPasswordDto dto, string ipAddress, CancellationToken cancellationToken = default)
     {
-        _logger.LogSection("RESET PASSWORD", $"🔁 Password reset requested for: {email}");
+        _logger.LogSection("RESET PASSWORD", $"🔁 Password reset requested");
 
         try
         {
             // 1️⃣ تحقق من صحة البيانات
-            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(newPassword))
+            if (string.IsNullOrEmpty(dto.Token)
+                || dto.NewPassword != dto.ConfirmPassword)
             {
-                _logger.LogSection("RESET PASSWORD ERROR", "Missing required fields (email/token/password).", LogLevel.Warning);
+                _logger.LogSection("RESET PASSWORD ERROR", "Missing required fields (token/password/ConfirmPassword).", LogLevel.Warning);
                 return false;
             }
 
-            // 2️⃣ جلب المستخدم
-            var user = await _userService.GetUserByEmailAsync(email, cancellationToken);
-            if (user == null)
-            {
-                _logger.LogSection("RESET PASSWORD ERROR", $"No user found with email: {email}", LogLevel.Warning);
-                return false;
-            }
+            // 🧩 2️⃣ فك التوكن القادم من الرابط (لأنه Encoded)
+            var decodedToken = Uri.UnescapeDataString(dto.Token);
+            Console.WriteLine($"\n{decodedToken}\n");
 
             // 3️⃣ التحقق من صحة التوكن في قاعدة البيانات
-            var userToken = await _userTokenService.GetUserTokenByToken(token, cancellationToken);
-            if (userToken == null || userToken.IsUse || userToken.ExpiresAt < DateTime.UtcNow)
+            var userToken = await _userTokenService.GetUserTokenByToken(decodedToken, cancellationToken);
+            if (userToken == null || userToken.IsUse || userToken.ExpiresAt < DateTime.UtcNow || userToken.User is null)
             {
-                _logger.LogSection("RESET PASSWORD ERROR", $"Invalid or expired token for {email}.", LogLevel.Warning);
+                _logger.LogSection("RESET PASSWORD ERROR", $"Invalid or expired token.", LogLevel.Warning);
                 return false;
             }
 
-            // 4️⃣ تأكد أن التوكن فعلاً يخص نفس المستخدم
-            if (userToken.UserId != user.Id)
-            {
-                _logger.LogSection("RESET PASSWORD ERROR", $"Token does not belong to user {email}.", LogLevel.Warning);
-                return false;
-            }
+            // 4️⃣ تحديث كلمة المرور (تجزئة قبل الحفظ)
+            userToken.User.PasswordHash = _passwordHasher.HashPassword(dto.NewPassword);
+            _logger.LogSection("RESET PASSWORD", $"✅ Password updated successfully for {userToken.User.Email}.");
 
+            // 5️⃣ إبطال التوكنات القديمة (اختياري لكن مستحسن)
+            await _tokenService.RevokeOldTokensAsync(userToken.User.Id, ipAddress, "Reset Password", cancellationToken);
+            _logger.LogSection("RESET PASSWORD", $"♻️ Old tokens revoked for {userToken.User.Email}.");
 
-            // 5️⃣ تحديث كلمة المرور (تجزئة قبل الحفظ)
-            user.PasswordHash = _passwordHasher.HashPassword(newPassword);
-            _logger.LogSection("RESET PASSWORD", $"✅ Password updated successfully for {email}.");
-
-            // 6️⃣ إبطال التوكنات القديمة (اختياري لكن مستحسن)
-            await _tokenService.RevokeOldTokensAsync(user.Id, ipAddress, "Reset Password", cancellationToken);
-            _logger.LogSection("RESET PASSWORD", $"♻️ Old tokens revoked for {email}.");
-
-            // 7️⃣ حفظ التغييرات
-            await _userService.UpdateUserAsync(user, cancellationToken);
-            _logger.LogSection("RESET PASSWORD", $"💾 Changes saved successfully for {email}.");
-
+            // 6️⃣ تحديث حالة التوكن الحالي
             userToken.IsUse = true;
-            _logger.LogSection("RESET PASSWORD", $"Update User Token and Revoked Token userToken.IsUse = {userToken.IsUse}, {user.IsActive}.");
+
             await _userTokenService.UpdateUserTokenAsync(userToken, cancellationToken);
+
+            _logger.LogSection("RESET PASSWORD", $"Update User Token and Revoked Token userToken.IsUse = {userToken.IsUse}.");
 
             return true;
         }
@@ -353,48 +449,44 @@ public class AuthenticationService : IAuthenticationService
         }
         catch (Exception ex)
         {
-            _logger.LogSection("RESET PASSWORD ERROR", $"❌ Error resetting password for {email}: {ex.Message}", LogLevel.Error);
+            _logger.LogSection("RESET PASSWORD ERROR", $"❌ Error resetting password {ex.Message}", LogLevel.Error);
             throw;
         }
     }
     #endregion
 
     #region 🔁 ForgotPassword
-    public async Task<bool> ForgotPasswordAsync(string email, string frontendResetUrl, CancellationToken cancellationToken = default)
+    public async Task<bool> ForgotPasswordAsync(ForgotPasswordDto dto, CancellationToken cancellationToken = default)
     {
-        _logger.LogSection("FORGOT PASSWORD", $"🔍 Forgot password requested for: {email}");
+        _logger.LogSection("FORGOT PASSWORD", $"🔍 Forgot password requested for: {dto.Email}");
 
         try
         {
-            if (string.IsNullOrWhiteSpace(email))
+            if (string.IsNullOrEmpty(dto.Email))
             {
                 _logger.LogSection("FORGOT PASSWORD ERROR", "Email is empty.", LogLevel.Warning);
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(frontendResetUrl))
+            if (string.IsNullOrEmpty(dto.BaseUrl))
             {
                 _logger.LogSection("FORGOT PASSWORD ERROR", "Frontend reset URL is missing.", LogLevel.Warning);
                 return false;
             }
 
-            // 1️⃣ جلب المستخدم من قاعدة البيانات
-            var user = await _userService.GetUserByEmailAsync(email, cancellationToken);
+            var user = await _userService.GetUserByEmailAsync(dto.Email, cancellationToken);
 
-            // 🔒 خيار أمني: لا نخبر الـ frontend إذا كان البريد موجود أو لا
             if (user == null)
             {
-                _logger.LogSection("FORGOT PASSWORD INFO", $"User with email {email} not found. Returning success to avoid email enumeration.");
-                return true; // نحافظ على أمان النظام بعدم كشف وجود البريد
+                _logger.LogSection("FORGOT PASSWORD INFO", $"User with email {dto.Email} not found. Returning success to avoid email enumeration.");
+                return true; 
             }
 
-            // 2️⃣ توليد توكن إعادة تعيين مؤقت
             var resetToken = await _jwtTokenGenerator.GeneratingShortTermTokens(user, "Forogt Password");
 
             //Add Generated Sort Term Tokens
             var userToken = new UserToken
             {
-                Id = Guid.NewGuid(),
                 UserId = user.Id,
                 Token = resetToken,
                 CreateAt = DateTime.UtcNow,
@@ -404,26 +496,27 @@ public class AuthenticationService : IAuthenticationService
             };
             await _userTokenService.CreateUserTokenAsync(userToken, cancellationToken);
 
-            // 3️⃣ تكوين رابط إعادة التعيين للـ Frontend
             var encodedToken = Uri.EscapeDataString(resetToken);
+
             var encodedEmail = Uri.EscapeDataString(user.Email);
 
-            // استخدام UriBuilder يجعل الرابط أكثر أمانًا وديناميكية
-            var builder = new UriBuilder(frontendResetUrl);
+            var builder = new UriBuilder(dto.BaseUrl);
+
             builder.Query = $"email={encodedEmail}&token={encodedToken}";
+
             var resetLink = builder.Uri.ToString();
 
-            _logger.LogSection("FORGOT PASSWORD", $"🔗 Reset link generated for {email} (hidden for security).");
+            _logger.LogSection("FORGOT PASSWORD", $"🔗 Reset link generated for {dto.Email} (hidden for security).");
 
-            // 4️⃣ إرسال البريد الإلكتروني للمستخدم
             await _emailService.SendPasswordResetAsync(user.Email, resetLink);
-            _logger.LogSection("FORGOT PASSWORD", $"📧 Password reset email sent to {email}");
+
+            _logger.LogSection("FORGOT PASSWORD", $"📧 Password reset email sent to {dto.Email}");
 
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogSection("FORGOT PASSWORD ERROR", $"❌ Error while processing forgot password for {email}: {ex.Message}", LogLevel.Error);
+            _logger.LogSection("FORGOT PASSWORD ERROR", $"❌ Error while processing forgot password for {dto.Email}: {ex.Message}", LogLevel.Error);
             throw;
         }
     }
