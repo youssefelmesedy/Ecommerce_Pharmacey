@@ -1,6 +1,6 @@
 <!-- 🌟 PROJECT BANNER -->
 <p align="center">
-  <img src="https://raw.githubusercontent.com/YOUR_USERNAME/Ecommerce_Pharmacy/main/.github/banner.png" alt="Ecommerce Pharmacy Banner" width="100%" />
+  <img src=".github/images/banner.png" alt="Ecommerce Pharmacy Banner" width="100%" />
 </p>
 
 <h1 align="center">💊 Ecommerce_Pharmacy</h1>
