@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Pharmacy.Application.Common.Models;
+using Pharmacy.Application.Common.StaticMessages;
 using Pharmacy.Application.Dtos.Productes;
 using Pharmacy.Application.ResultFactorys;
 using Pharmacy.Application.Services.InterFaces.EntityInterface;
@@ -8,7 +9,7 @@ using Pharmacy.Application.Services.InterFaces.EntityInterface;
 namespace Pharmacy.Application.Features.Products.Qeuries.Pagenation;
 
 public class GetPagedProductHandler
-    : IRequestHandler<GetPagedProductCommand, ResultDto<PaginatedResult<ProductDto>>>
+    : IRequestHandler<GetPagedProductQuery, ResultDto<PaginatedResult<ProductDto>>>
 {
     private readonly IProductService _productService;
     private readonly IResultFactory _resultFactory;
@@ -20,7 +21,7 @@ public class GetPagedProductHandler
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<ResultDto<PaginatedResult<ProductDto>>> Handle(GetPagedProductCommand request, CancellationToken cancellationToken)
+    public async Task<ResultDto<PaginatedResult<ProductDto>>> Handle(GetPagedProductQuery request, CancellationToken cancellationToken)
     {
         var paginated = await _productService.GetPagedProductAsync(
             request.PageNumber,
@@ -31,7 +32,7 @@ public class GetPagedProductHandler
 
         if (paginated.TotalCount == 0 || paginated.Data is null)
             return _resultFactory.Failure<PaginatedResult<ProductDto>>(
-                "Not Found",
+                $"{Messagies.NotFound}",
                 "No products match the given criteria."
             );
 
@@ -44,7 +45,7 @@ public class GetPagedProductHandler
         };
 
         return _resultFactory.Success(paginatedResult,
-            "Successfully retrieved paginated products."
+            $"{Messagies.GetPagination} products."
         );
     }
 }

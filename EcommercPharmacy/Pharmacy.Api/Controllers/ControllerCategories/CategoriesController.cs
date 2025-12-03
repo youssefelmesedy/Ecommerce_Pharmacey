@@ -71,7 +71,6 @@ namespace Pharmacy.Api.Controllers.ControllerCategories
             return Ok(result);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost()]
         public async Task<IActionResult> CreateCategory(CreateCategoryDto dto, CancellationToken cancellation)
         {
@@ -85,8 +84,8 @@ namespace Pharmacy.Api.Controllers.ControllerCategories
                 return BadRequest(result);
 
             return Ok(result);
-        }
-        [Authorize(Roles = "Admin")]
+         }
+
         [HttpPut()]
         public async Task<IActionResult> UpdateCategory(UpdateCategoryDto dto, CancellationToken cancellation)
         {

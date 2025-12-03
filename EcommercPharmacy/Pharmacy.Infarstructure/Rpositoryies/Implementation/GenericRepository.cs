@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Pharmacy.Infarstructure.Rpositoryies;
 using Pharmacy.Infrastructure.Repositories.Interfaces;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Pharmacy.Infrastructure.Repositories.Implementations
@@ -22,8 +21,8 @@ namespace Pharmacy.Infrastructure.Repositories.Implementations
         {
             IQueryable<TEntity> query = _dbSet;
 
-            if (options.Filter is not null)
-                query = query.Where(options.Filter);
+            if (options.FilterExpression is not null)
+                query = query.Where(options.FilterExpression);
 
             foreach (var include in options.Includes)
                 query = query.Include(include);
@@ -49,6 +48,14 @@ namespace Pharmacy.Infrastructure.Repositories.Implementations
                 query = query.AsNoTracking();
 
             return query;
+        }
+
+        // FirstOrDefaultAsync
+        public async Task<TEntity?> FirstOrDefaultAsync(QueryOptions<TEntity> options, CancellationToken cancellationToken)
+        {
+            var query = BuildQuery(options);
+
+            return await query.FirstOrDefaultAsync(cancellationToken);
         }
 
         // ✅ Get multiple entities

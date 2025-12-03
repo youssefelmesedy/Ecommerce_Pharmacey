@@ -6,6 +6,7 @@ namespace Pharmacy.Infrastructure.Repositories.Interfaces
     public interface IGenericRepository<TEntity> where TEntity : class
     {
         // Query operations
+        Task<TEntity?> FirstOrDefaultAsync(QueryOptions<TEntity> options, CancellationToken cancellationToken);
         Task<IEnumerable<TEntity>> GetAsync(QueryOptions<TEntity> options, CancellationToken cancellationToken = default);
         Task<TEntity?> GetSingleAsync(QueryOptions<TEntity> options, CancellationToken cancellationToken = default);
         Task<TEntity?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default);

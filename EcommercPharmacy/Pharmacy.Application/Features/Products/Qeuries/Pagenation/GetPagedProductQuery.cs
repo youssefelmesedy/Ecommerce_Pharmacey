@@ -3,9 +3,9 @@ using Pharmacy.Application.Common.Models;
 using Pharmacy.Application.Dtos.Productes;
 
 namespace Pharmacy.Application.Features.Products.Qeuries.Pagenation;
-public record GetPagedProductCommand : IRequest<ResultDto<PaginatedResult<ProductDto>>>
+public record GetPagedProductQuery : IRequest<ResultDto<PaginatedResult<ProductDto>>>
 {
-    public GetPagedProductCommand(int pageNumber, int pageSize, Guid? categoryId, string? search)
+    public GetPagedProductQuery(int pageNumber, int pageSize, Guid? categoryId, string? search)
     {
         PageNumber = pageNumber;
         PageSize = pageSize;

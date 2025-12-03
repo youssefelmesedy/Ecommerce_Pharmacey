@@ -12,5 +12,5 @@ public interface IProductService : IGenericService<Product>
         string? search = null,
         CancellationToken cancellation = default);
 
-
+    Task<int> DeleteProductAsync(Guid id, CancellationToken cancellationToken = default);
 }

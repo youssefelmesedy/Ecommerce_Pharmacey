@@ -87,7 +87,7 @@ public class TokenService : ITokenService
         {
             var query = new QueryOptions<RefreshToken>
             {
-                Filter = t => t.UserId == userId && t.ExpiresAtUtc > DateTime.UtcNow,
+                FilterExpression = t => t.UserId == userId && t.ExpiresAtUtc > DateTime.UtcNow,
                 AsNoTracking = false,
                 OrderBy = q => q.OrderBy(t => t.CreatedAtUtc)
             };
@@ -146,7 +146,7 @@ public class TokenService : ITokenService
 
             var queryOption = new QueryOptions<RefreshToken>
             {
-                Filter = rt => rt.Token.ToString().Trim() == refreshToken.ToString().Trim(),
+                FilterExpression = rt => rt.Token.ToString().Trim() == refreshToken.ToString().Trim(),
                 Includes = [rt => rt.User],
                 AsNoTracking = false
             };
@@ -169,7 +169,7 @@ public class TokenService : ITokenService
         {
             var query = new QueryOptions<RefreshToken>
             {
-                Filter = t => t.UserId == userId && t.ExpiresAtUtc > DateTime.UtcNow,
+                FilterExpression = t => t.UserId == userId && t.ExpiresAtUtc > DateTime.UtcNow,
                 OrderBy = q => q.OrderByDescending(t => t.CreatedAtUtc)
             };
 

@@ -34,7 +34,7 @@ public class UserService : IUserService
 
             var queryOption = new QueryOptions<User>
             {
-                Filter = u => u.Email == email,
+                FilterExpression = u => u.Email == email,
                 AsNoTracking = true
             };
 

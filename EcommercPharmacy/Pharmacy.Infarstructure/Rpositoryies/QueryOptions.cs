@@ -4,7 +4,8 @@ namespace Pharmacy.Infarstructure.Rpositoryies
 {
     public record QueryOptions<TEntity>
     {
-        public Expression<Func<TEntity, bool>>? Filter { get; set; }
+        public Expression<Func<TEntity, bool>>? FilterExpression { get; set; }
+    public Dictionary<string, object>? FilterParameters { get; set; }
         public Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? OrderBy { get; set; }
         public Expression<Func<TEntity, object>>? GroupBy { get; set; }
         public List<Expression<Func<TEntity, object>>> Includes { get; set; } = new();

@@ -23,7 +23,7 @@ public class UserTokenService : GenericService<UserTokenService>, IUserTokenServ
 
             var queryOptions = new QueryOptions<UserToken>
             {
-                Filter = ut => ut.Token == token,
+                FilterExpression = ut => ut.Token == token,
                 AsNoTracking = false,
                 Includes = new List<Expression<Func<UserToken, object>>>
                 {
@@ -85,7 +85,7 @@ public class UserTokenService : GenericService<UserTokenService>, IUserTokenServ
         var userToken = await _unitOfWork.Repository<UserToken>()
             .GetSingleAsync(new QueryOptions<UserToken>
             {
-                Filter = ut => ut.UserId == userId
+                FilterExpression = ut => ut.UserId == userId
             }, cancellationToken);
         if(userToken == null)
             return false;

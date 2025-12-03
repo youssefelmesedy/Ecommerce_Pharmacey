@@ -95,7 +95,7 @@ public class CategoryService : GenericService<Category>, ICategoryService
                 // 1️⃣ إعداد خيارات الكويري مع Include للـ Products
                 var queryOptions = new QueryOptions<Category>
                 {
-                    Filter = c => c.Id == category_Id,
+                    FilterExpression = c => c.Id == category_Id,
                     Includes = new List<Expression<Func<Category, object>>>
                     {
                         c => c.products!

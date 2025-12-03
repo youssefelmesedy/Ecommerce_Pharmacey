@@ -37,19 +37,27 @@ public static class CacheKeyBuilder
 
     private static string BuildQueryOptionsKey<T>(QueryOptions<T> options)
     {
+        // Includes
         var includes = options.Includes != null && options.Includes.Any()
             ? string.Join(",", options.Includes.Select(i => i.Body.ToString().Replace("c => c.", "")))
             : "none";
 
+        // OrderBy
         var orderBy = options.OrderBy != null
             ? options.OrderBy.Method.Name
             : "none";
 
-        return $"Filer:{(options.Filter != null ? "y" : "n")}" +
+        // FilterParameters
+        var filter = "none";
+        if (options.FilterParameters != null && options.FilterParameters.Any())
+            filter = string.Join("_", options.FilterParameters.Select(kv => $"{kv.Key}:{kv.Value}"));
+
+        return $"Filter:{filter}" +
                $"_OrderBy:{orderBy}" +
                $"_Includes:{includes}" +
                $"_AsNoTracking:{options.AsNoTracking}" +
-               $"_Skip:{(options.Skip.HasValue ? options.Skip.Value.ToString() : "n")}" +
-               $"_Take:{(options.Take.HasValue ? options.Take.Value.ToString() : "n")}";
+               $"_Skip:{options.Skip?.ToString() ?? "n"}" +
+               $"_Take:{options.Take?.ToString() ?? "n"}";
     }
+
 }

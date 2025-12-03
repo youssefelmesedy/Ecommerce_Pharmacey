@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Pharmacy.Application.Exceptions;
 using Pharmacy.Infarstructure.Cacheing;
 using Pharmacy.Infarstructure.Rpositoryies;
 using Pharmacy.Infarstructure.Services.InterFaces;
@@ -23,7 +23,7 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
     }
 
     // 🟢 Query
-    public async Task<IEnumerable<TEntity>> GetAsync(QueryOptions<TEntity> queryOptions, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetAsync(QueryOptions<TEntity> queryOptions, CancellationToken cancellationToken = default)
     {
         string key = CacheKeyBuilder.BuilderCacheKey(_cachePrefix, "GetAsync", queryOptions);
 
@@ -51,7 +51,7 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
         }
     }
 
-    public async Task<TEntity?> GetSingleAsync(QueryOptions<TEntity> queryOptions, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetSingleAsync(QueryOptions<TEntity> queryOptions, CancellationToken cancellationToken = default)
     {
         string key = CacheKeyBuilder.BuilderCacheKey(_cachePrefix, "GetSingle", queryOptions);
 
@@ -69,7 +69,7 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
         }, _cachePrefix, TimeSpan.FromMinutes(5), cancellationToken);
     }
 
-    public async Task<TEntity?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
     {
         string key = CacheKeyBuilder.BuilderCacheKey(_cachePrefix, "ById", id);
 
@@ -122,6 +122,8 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
             await _unitOfWork.Repository<TEntity>().AddAsync(entity, cancellationToken);
 
             var effected = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (effected <= 0)
+                throw new BusinessException("No records were Add. The entity may have been modified or deleted since it was loaded.");
 
             await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
 
@@ -143,8 +145,11 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
             await _unitOfWork.Repository<TEntity>().Update(entity);
 
            var effected = await _unitOfWork.SaveChangesAsync(cancellationToken);
-            if (effected > 0)
-                await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
+            if (effected <= 0)
+                throw new BusinessException("No records were updated. The entity may have been modified or deleted since it was loaded.");
+
+            await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
+
             _logger.LogInformation($"🟡 Updated {typeof(TEntity).Name}");
 
             return effected;
@@ -163,6 +168,8 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
             await _unitOfWork.Repository<TEntity>().Delete(entity);
 
             var effected = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (effected <= 0)
+                throw new BusinessException("No records were deleted. The entity may have been modified or deleted since it was loaded.");
 
             await _cache.RemoveByPrefixAsync(_cachePrefix, cancellationToken);
 
@@ -176,4 +183,5 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
             throw;
         }
     }
+
 }

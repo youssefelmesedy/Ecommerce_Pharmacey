@@ -6,6 +6,6 @@ public partial class ProductProfile : Profile
     public ProductProfile()
     {
         MappingPage();
-        MappingCreateProduct();
+        CurdMappingroduct();
     }
 }

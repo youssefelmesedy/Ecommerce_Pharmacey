@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Pharmacy.Application.Common.Models;
+using Pharmacy.Application.Common.StaticMessages;
 using Pharmacy.Application.ResultFactorys;
 using Pharmacy.Application.Services.InterFaces.EntityInterface;
 using Pharmacy.Domain.Entities;
@@ -27,10 +28,10 @@ namespace Pharmacy.Application.Features.Products.Commands.CreateProduct
 
             if (result <= 0)
             {
-                return _resultFactory.Failure<Guid>("Failed to create product.");
+                return _resultFactory.Failure<Guid>($"{Messagies.CreateFailed} Product");
             }
 
-            return _resultFactory.Success(product.Id, "Product created successfully.");
+            return _resultFactory.Success(product.Id, $"Product {Messagies.Created}.");
         }
     }
 }

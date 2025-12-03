@@ -13,7 +13,7 @@
 
         // Navigation
         public Guid CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public Category? Category { get; set; } = default;
 
         // One-to-Many: Product → ProductImages
         public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
