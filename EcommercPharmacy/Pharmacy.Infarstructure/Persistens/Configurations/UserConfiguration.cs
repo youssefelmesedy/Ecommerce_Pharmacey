@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
+using Pharmacy.Domain.Enums;
 
 namespace Pharmacy.Infarstructure.Persistens.Configurations;
 
@@ -25,6 +26,7 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Role)
                .IsRequired()
+               .HasConversion<string>()
                .HasMaxLength(50);
 
         builder.Property(u => u.ProfileImageUrl)
@@ -32,6 +34,9 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.CreatedAt)
                .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.Property(u => u.UpdatedAt)
+               .IsRequired(false);
 
         // ✅ Indexes
         builder.HasIndex(u => u.Email)

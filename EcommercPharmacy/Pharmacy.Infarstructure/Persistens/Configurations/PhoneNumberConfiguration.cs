@@ -1,26 +1,40 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
 
 namespace Pharmacy.Infarstructure.Persistens.Configurations;
 
-public class PhoneNumberConfiguration : IEntityTypeConfiguration<PhoneNumbers>
+internal class PhoneNumberConfiguration : IEntityTypeConfiguration<PhoneNumbers>
 {
     public void Configure(EntityTypeBuilder<PhoneNumbers> builder)
     {
         builder.ToTable("PhoneNumbers");
 
-        builder.HasKey(p => p.Id);
+        builder.HasKey(pn => pn.Id);
 
-        builder.Property(p => p.phoneNumber)
+        builder.Property(pn => pn.PhoneNumber)
                .IsRequired()
                .HasMaxLength(20);
 
-        builder.Property(p => p.IsPrimary)
+        builder.Property(pn => pn.IsPrimary)
+               .IsRequired()
                .HasDefaultValue(false);
 
-        // ✅ Index on phoneNumber (للبحث عن المستخدم برقم الهاتف)
-        builder.HasIndex(p => p.phoneNumber)
-               .HasDatabaseName("IX_PhoneNumbers_Number");
+        builder.Property(pn => pn.IsVerified)
+               .IsRequired()
+               .HasDefaultValue(false);
+
+        // Indexes
+        builder.HasIndex(pn => pn.PhoneNumber)
+               .HasDatabaseName("IX_PhoneNumbers_PhoneNumber");
+
+        builder.HasIndex(pn => pn.UserId)
+               .HasDatabaseName("IX_PhoneNumbers_UserId");
+
+        // Relationship
+        builder.HasOne(pn => pn.User)
+               .WithMany(u => u.PhoneNumbers)
+               .HasForeignKey(pn => pn.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

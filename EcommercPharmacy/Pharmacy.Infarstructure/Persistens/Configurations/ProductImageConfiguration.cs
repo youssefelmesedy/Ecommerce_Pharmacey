@@ -1,34 +1,46 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
 
 namespace Pharmacy.Infarstructure.Persistens.Configurations;
 
-public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
+internal class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
 {
     public void Configure(EntityTypeBuilder<ProductImage> builder)
     {
         builder.ToTable("ProductImages");
 
-        builder.HasKey(i => i.Id);
+        builder.HasKey(pi => pi.Id);
 
-        builder.Property(i => i.ImageUrl)
+        builder.Property(pi => pi.ImageUrl)
                .IsRequired()
-               .HasMaxLength(500) ;
+               .HasMaxLength(500);
 
-        builder.Property(i => i.IsMain)
+        builder.Property(pi => pi.AltText)
+               .HasMaxLength(200);
+
+        builder.Property(pi => pi.IsMain)
+               .IsRequired()
                .HasDefaultValue(false);
 
-        builder.Property(i => i.DisplayOrder)
+        builder.Property(pi => pi.DisplayOrder)
+               .IsRequired()
                .HasDefaultValue(0);
 
-        builder.HasOne(i => i.Product)
-               .WithMany(p => p.Images)
-               .HasForeignKey(i => i.ProductId)
-               .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(pi => pi.CreatedAt)
+               .HasDefaultValueSql("GETUTCDATE()");
 
-        // ✅ Index to sort and filter quickly
-        builder.HasIndex(i => new { i.ProductId, i.DisplayOrder })
-               .HasDatabaseName("IX_ProductImages_Product_DisplayOrder");
+        // Indexes
+        builder.HasIndex(pi => pi.ProductId)
+               .HasDatabaseName("IX_ProductImages_ProductId");
+
+        builder.HasIndex(pi => new { pi.ProductId, pi.IsMain })
+               .HasDatabaseName("IX_ProductImages_ProductId_IsMain");
+
+        // Relationship
+        builder.HasOne(pi => pi.Product)
+               .WithMany(p => p.Images)
+               .HasForeignKey(pi => pi.ProductId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }
