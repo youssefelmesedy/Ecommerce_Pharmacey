@@ -56,8 +56,8 @@ public class AuthenticationService : IAuthenticationService
                 Email = dto.Email,
                 Address = dto.Address,
                 PasswordHash = _passwordHasher.HashPassword(dto.Password),
-                PhoneNumbers = dto.phoneNumbers.Select(p => new PhoneNumbers { phoneNumber = p }).ToList(),
-                Role = "Customer",
+                PhoneNumbers = dto.phoneNumbers.Select(p => new PhoneNumbers { PhoneNumber = p }).ToList(),
+                Role = UserRole.Customer,
             };
 
             var newUser = await _userService.CreateUserAsync(user, dto.ImageProfile, cancellationToken);
@@ -327,9 +327,9 @@ public class AuthenticationService : IAuthenticationService
             {
                 UserId = user.Id,
                 Token = resetToken,
-                CreateAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(15),
-                IsUse = false,
+                IsUsed = false,
                 TokenType = TokenType.VerificationEmail,
             };
 
@@ -374,7 +374,7 @@ public class AuthenticationService : IAuthenticationService
 
             var userToken = await _userTokenService.GetUserTokenByToken(dto.Token, cancellationToken);
 
-            if (userToken == null || userToken.IsUse || userToken.ExpiresAt < DateTime.UtcNow || userToken.User is null)
+            if (userToken == null || userToken.IsUsed || userToken.ExpiresAt < DateTime.UtcNow || userToken.User is null)
             {
                 _logger.LogSection("EMAIL VERIFICATION ERROR", "Invalid or expired token.", LogLevel.Warning);
                 return false;
@@ -382,7 +382,7 @@ public class AuthenticationService : IAuthenticationService
 
             userToken.User.IsActive = true;
 
-            userToken.IsUse = true;
+            userToken.IsUsed = true;
 
             await _userTokenService.UpdateUserTokenAsync(userToken, cancellationToken);
 
@@ -419,7 +419,7 @@ public class AuthenticationService : IAuthenticationService
 
             // 3️⃣ التحقق من صحة التوكن في قاعدة البيانات
             var userToken = await _userTokenService.GetUserTokenByToken(decodedToken, cancellationToken);
-            if (userToken == null || userToken.IsUse || userToken.ExpiresAt < DateTime.UtcNow || userToken.User is null)
+            if (userToken == null || userToken.IsUsed || userToken.ExpiresAt < DateTime.UtcNow || userToken.User is null)
             {
                 _logger.LogSection("RESET PASSWORD ERROR", $"Invalid or expired token.", LogLevel.Warning);
                 return false;
@@ -434,11 +434,11 @@ public class AuthenticationService : IAuthenticationService
             _logger.LogSection("RESET PASSWORD", $"♻️ Old tokens revoked for {userToken.User.Email}.");
 
             // 6️⃣ تحديث حالة التوكن الحالي
-            userToken.IsUse = true;
+            userToken.IsUsed = true;
 
             await _userTokenService.UpdateUserTokenAsync(userToken, cancellationToken);
 
-            _logger.LogSection("RESET PASSWORD", $"Update User Token and Revoked Token userToken.IsUse = {userToken.IsUse}.");
+            _logger.LogSection("RESET PASSWORD", $"Update User Token and Revoked Token userToken.IsUse = {userToken.IsUsed}.");
 
             return true;
         }
@@ -489,9 +489,9 @@ public class AuthenticationService : IAuthenticationService
             {
                 UserId = user.Id,
                 Token = resetToken,
-                CreateAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(15),
-                IsUse = false,
+                IsUsed = false,
                 TokenType = TokenType.ResetPassword,
             };
             await _userTokenService.CreateUserTokenAsync(userToken, cancellationToken);

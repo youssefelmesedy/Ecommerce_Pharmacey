@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Pharmacy.Application.Dtos.Productes;
+using Pharmacy.Application.Dtos.Products;
 using Pharmacy.Application.Features.Products.Commands.CreateProduct;
 using Pharmacy.Application.Features.Products.Commands.DeleteProduct;
 using Pharmacy.Application.Features.Products.Commands.UpdateProduct;

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Pharmacy.Application.Common.Models;
-using Pharmacy.Application.Dtos.Productes;
+using Pharmacy.Application.Dtos.Products;
 
 namespace Pharmacy.Application.Features.Products.Commands.CreateProduct;
 public record CreateProductCommand : IRequest<ResultDto<Guid>>

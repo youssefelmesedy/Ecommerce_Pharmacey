@@ -28,7 +28,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
                .HasDefaultValueSql("GETUTCDATE()");
 
         builder.HasOne(p => p.Category)
-               .WithMany(c => c.products)
+               .WithMany(c => c.Products)
                .HasForeignKey(p => p.CategoryId)
                .OnDelete(DeleteBehavior.NoAction);
 

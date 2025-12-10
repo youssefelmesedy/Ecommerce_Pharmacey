@@ -6,7 +6,7 @@ public class UpdateProductValidation : AbstractValidator<UpdateProductCommand>
 {
     public UpdateProductValidation()
     {
-        RuleFor(p => p.Dto.ID)
+        RuleFor(p => p.Dto.Id)
             .NotEmpty().WithMessage("Product ID is required.");
         RuleFor(p => p.Dto.Name)
             .MaximumLength(100).WithMessage("Product Name must not exceed 100 characters.");

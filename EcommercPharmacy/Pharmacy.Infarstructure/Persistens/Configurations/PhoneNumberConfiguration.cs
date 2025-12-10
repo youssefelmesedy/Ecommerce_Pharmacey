@@ -12,7 +12,7 @@ public class PhoneNumberConfiguration : IEntityTypeConfiguration<PhoneNumbers>
 
         builder.HasKey(p => p.Id);
 
-        builder.Property(p => p.phoneNumber)
+        builder.Property(p => p.PhoneNumber)
                .IsRequired()
                .HasMaxLength(20);
 
@@ -20,7 +20,7 @@ public class PhoneNumberConfiguration : IEntityTypeConfiguration<PhoneNumbers>
                .HasDefaultValue(false);
 
         // ✅ Index on phoneNumber (للبحث عن المستخدم برقم الهاتف)
-        builder.HasIndex(p => p.phoneNumber)
+        builder.HasIndex(p => p.PhoneNumber)
                .HasDatabaseName("IX_PhoneNumbers_Number");
     }
 }

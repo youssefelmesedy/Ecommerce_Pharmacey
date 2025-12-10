@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Pharmacy.Application.Services.InterFaces.AuthenticationInterFace;
 using Pharmacy.Application.Settings;
 using Pharmacy.Domain.Entities;
+using Pharmacy.Domain.Enums;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -35,7 +36,7 @@ namespace Pharmacy.Application.Services.Implementation.AuthenticationService
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
                 new Claim(ClaimTypes.Name, user.FullName ?? string.Empty),
-                new Claim(ClaimTypes.Role, user.Role ?? "Customer"),
+                new Claim(ClaimTypes.Role, user.Role.ToString() ?? "No't Role"),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

@@ -1,4 +1,4 @@
-﻿using Pharmacy.Application.Dtos.Productes;
+﻿using Pharmacy.Application.Dtos.Products;
 using Pharmacy.Domain.Entities;
 
 namespace Pharmacy.Application.Features.Products.Mapping;

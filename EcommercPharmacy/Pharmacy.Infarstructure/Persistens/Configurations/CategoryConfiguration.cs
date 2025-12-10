@@ -18,7 +18,7 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
         builder.HasIndex(c => c.Name)
                .HasDatabaseName("Ix_Categories_Name");
 
-        builder.HasMany(c => c.products)
+        builder.HasMany(c => c.Products)
                .WithOne(p => p.Category)
                .HasForeignKey(p => p.CategoryId)
                .OnDelete(DeleteBehavior.NoAction);

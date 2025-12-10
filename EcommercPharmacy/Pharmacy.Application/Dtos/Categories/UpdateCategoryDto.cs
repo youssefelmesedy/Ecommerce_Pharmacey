@@ -4,6 +4,7 @@ namespace Pharmacy.Application.Dtos.Categories;
 
 public class UpdateCategoryDto
 {
+    public Guid Id { get; set; }
     [StringLength(100)]
     public string? Name { get; set; }
 

@@ -4,7 +4,7 @@ using Pharmacy.Application.Common.ExtenionFile;
 using Pharmacy.Application.Common.ExtensionMethods;
 using Pharmacy.Application.Common.Helpar;
 using Pharmacy.Application.Common.Models;
-using Pharmacy.Application.Dtos.Productes;
+using Pharmacy.Application.Dtos.Products;
 using Pharmacy.Application.Exceptions;
 using Pharmacy.Application.Services.InterFaces.EntityInterface;
 using Pharmacy.Domain.Entities;
@@ -224,7 +224,7 @@ public class ProductService : GenericService<Product>, IProductService
     // --------------------------------------
     // 4️⃣ Decrease Stock (Special Business Logic)
     // --------------------------------------
-    public async Task<int> DecreaseStockAsync(Guid productId, decimal amount, CancellationToken cancellation)
+    public async Task<int> DecreaseStockAsync(Guid productId, int amount, CancellationToken cancellation)
     {
         var product = await _unitOfWork.Repository<Product>().GetByIdAsync(productId, cancellation)
             ?? throw new BusinessException("Product not found.");

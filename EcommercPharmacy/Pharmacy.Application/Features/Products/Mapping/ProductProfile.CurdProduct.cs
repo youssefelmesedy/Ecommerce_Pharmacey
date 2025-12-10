@@ -1,4 +1,4 @@
-﻿using Pharmacy.Application.Dtos.Productes;
+﻿using Pharmacy.Application.Dtos.Products;
 using Pharmacy.Domain.Entities;
 
 namespace Pharmacy.Application.Features.Products.Mapping
@@ -17,7 +17,7 @@ namespace Pharmacy.Application.Features.Products.Mapping
 
             // Update Mapper for UpdateProductDto to Product
             CreateMap<Product, UpdateProductDto>()
-                .ForMember(dest => dest.ID, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Price))

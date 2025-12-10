@@ -26,7 +26,7 @@ public class CategoryService : GenericService<Category>, ICategoryService
                 OrderBy = c => c.OrderBy(c => c.Name),
                 Includes = new List<Expression<Func<Category, object>>>
                 {
-                  c => c.products!
+                  c => c.Products!
                 }
             };
 
@@ -55,8 +55,8 @@ public class CategoryService : GenericService<Category>, ICategoryService
                     Category_Id = c.Id,
                     Name = c.Name,
                     Description = c.Description ?? string.Empty,
-                    Products = c.products != null
-                        ? c.products.OrderBy(p => p.Name)
+                    Products = c.Products != null
+                        ? c.Products.OrderBy(p => p.Name)
                             .Select(p => new ProductWithCategoryDto
                             {
                                 Id = p.Id,
@@ -98,7 +98,7 @@ public class CategoryService : GenericService<Category>, ICategoryService
                     FilterExpression = c => c.Id == category_Id,
                     Includes = new List<Expression<Func<Category, object>>>
                     {
-                        c => c.products!
+                        c => c.Products!
                     },
                     AsNoTracking = true
                 };
@@ -115,8 +115,8 @@ public class CategoryService : GenericService<Category>, ICategoryService
                     Category_Id = category!.Id,
                     Name = category.Name,
                     Description = category.Description ?? string.Empty,
-                    Products = category.products != null
-                        ? category.products
+                    Products = category.Products != null
+                        ? category.Products
                             .OrderBy(p => p.Name)
                             .Select(p => new ProductWithCategoryDto
                             {

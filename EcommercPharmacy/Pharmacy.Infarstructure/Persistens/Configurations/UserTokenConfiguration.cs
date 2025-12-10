@@ -21,11 +21,11 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
         builder.Property(e => e.ExpiresAt)
             .IsRequired();
 
-        builder.Property(e => e.CreateAt)
+        builder.Property(e => e.CreatedAt)
             .IsRequired()
             .HasDefaultValueSql("GETUTCDATE()");
 
-        builder.Property(e => e.IsUse)
+        builder.Property(e => e.IsUsed)
             .HasColumnName("IsUse");
 
         builder.HasOne(e => e.User)

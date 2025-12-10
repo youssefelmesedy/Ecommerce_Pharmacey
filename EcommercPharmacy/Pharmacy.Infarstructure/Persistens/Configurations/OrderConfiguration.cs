@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
+using Pharmacy.Domain.Enums;
 
 namespace Pharmacy.Infarstructure.Persistens.Configurations;
 
@@ -17,7 +18,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(o => o.Status)
                .HasMaxLength(50)
-               .HasDefaultValue("Pending");
+               .HasDefaultValue(OrderStatus.Pending);
 
         builder.Property(o => o.DeliveryAddress)
                .IsRequired()

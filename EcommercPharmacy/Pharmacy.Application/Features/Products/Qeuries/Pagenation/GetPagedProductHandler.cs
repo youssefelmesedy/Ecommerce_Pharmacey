@@ -2,7 +2,7 @@
 using MediatR;
 using Pharmacy.Application.Common.Models;
 using Pharmacy.Application.Common.StaticMessages;
-using Pharmacy.Application.Dtos.Productes;
+using Pharmacy.Application.Dtos.Products;
 using Pharmacy.Application.ResultFactorys;
 using Pharmacy.Application.Services.InterFaces.EntityInterface;
 
