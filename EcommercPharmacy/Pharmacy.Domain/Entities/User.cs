@@ -1,4 +1,7 @@
-﻿namespace Pharmacy.Domain.Entities;
+using Pharmacy.Domain.Enums;
+
+namespace Pharmacy.Domain.Entities;
+
 public class User
 {
     public Guid Id { get; set; }
@@ -9,8 +12,9 @@ public class User
 
     public string? Address { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public string? ProfileImageUrl { get; set; } = string.Empty;
-    public string Role { get; set; } = "Customer";
+    public DateTime? UpdatedAt { get; set; }
+    public string? ProfileImageUrl { get; set; }
+    public UserRole Role { get; set; } = UserRole.Customer;
 
     // Navigation Property
     public ICollection<RefreshToken>? RefreshTokens { get; set; }

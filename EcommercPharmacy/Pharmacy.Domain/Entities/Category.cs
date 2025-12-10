@@ -1,9 +1,12 @@
-﻿namespace Pharmacy.Domain.Entities;
+namespace Pharmacy.Domain.Entities;
+
 public class Category
 {
     public Guid Id { get; set; }
-    public string? Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public bool IsActive { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public ICollection<Product>? products { get; set; }
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 }
