@@ -1,51 +1,59 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
 
-namespace Pharmacy.Infrastructure.Persistence.Configurations
+namespace Pharmacy.Infarstructure.Persistens.Configurations;
+
+internal class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
 {
-    public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+    public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        public void Configure(EntityTypeBuilder<RefreshToken> builder)
-        {
-            builder.ToTable("RefreshTokens");
+        builder.ToTable("RefreshTokens");
 
-            builder.HasKey(e => e.Id);
+        builder.HasKey(rt => rt.Id);
 
-            builder.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .Metadata.SetBeforeSaveBehavior(PropertySaveBehavior.Ignore);
+        builder.Property(rt => rt.Token)
+               .IsRequired()
+               .HasMaxLength(500);
 
-            builder.Property(e => e.Token)
-                .IsRequired()
-                .HasMaxLength(256);
+        builder.Property(rt => rt.CreatedByIp)
+               .IsRequired()
+               .HasMaxLength(45);
 
-            builder.Property(e => e.ExpiresAtUtc)
-                .IsRequired();
+        builder.Property(rt => rt.RevokedByIp)
+               .HasMaxLength(45);
 
-            builder.Property(e => e.CreatedAtUtc)
-                .IsRequired()
-                .HasDefaultValueSql("GETUTCDATE()");
+        builder.Property(rt => rt.ReplacedByToken)
+               .HasMaxLength(500);
 
-            builder.Property(e => e.RevokedAtUtc)
-                .HasColumnName("RevokedAtUtc")
-                .IsRequired(false); // ← مهم جداً
+        builder.Property(rt => rt.RevokedReason)
+               .HasMaxLength(200);
 
-            builder.HasOne(e => e.User)
-                .WithMany(u => u.RefreshTokens)
-                .HasForeignKey(e => e.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+        builder.Property(rt => rt.ExpiresAtUtc)
+               .IsRequired();
 
-            builder.HasIndex(e => e.Token)
-                .IsUnique()
-                .HasDatabaseName("IX_RefreshTokens_Token");
+        builder.Property(rt => rt.CreatedAtUtc)
+               .HasDefaultValueSql("GETUTCDATE()");
 
-            builder.HasIndex(e => e.UserId)
-                .HasDatabaseName("IX_RefreshTokens_UserId");
+        // Ignore computed properties
+        builder.Ignore(rt => rt.IsActive);
+        builder.Ignore(rt => rt.IsExpired);
 
-            builder.HasIndex(e => e.ExpiresAtUtc)
-                .HasDatabaseName("IX_RefreshTokens_ExpiresAtUtc");
-        }
+        // Indexes
+        builder.HasIndex(rt => rt.Token)
+               .IsUnique()
+               .HasDatabaseName("IX_RefreshTokens_Token");
+
+        builder.HasIndex(rt => rt.UserId)
+               .HasDatabaseName("IX_RefreshTokens_UserId");
+
+        builder.HasIndex(rt => rt.ExpiresAtUtc)
+               .HasDatabaseName("IX_RefreshTokens_ExpiresAtUtc");
+
+        // Relationship
+        builder.HasOne(rt => rt.User)
+               .WithMany(u => u.RefreshTokens)
+               .HasForeignKey(rt => rt.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

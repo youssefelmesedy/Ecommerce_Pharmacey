@@ -1,25 +1,32 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Pharmacy.Domain.Entities;
+using Pharmacy.Domain.Enums;
 
 namespace Pharmacy.Infarstructure.Persistens.Configurations;
-public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
+
+internal class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
 {
     public void Configure(EntityTypeBuilder<UserToken> builder)
     {
         builder.ToTable("UserTokens");
 
-        builder.HasKey(k => k.Id);
+        builder.HasKey(ut => ut.Id);
 
-        builder.Property(e => e.Id)
-            .ValueGeneratedOnAdd(); 
+        builder.Property(ut => ut.Token)
+               .IsRequired()
+               .HasMaxLength(500);
 
-        builder.Property(e => e.Token)
-            .IsRequired()
-            .HasMaxLength(1000);
+        builder.Property(ut => ut.TokenType)
+               .IsRequired()
+               .HasConversion<string>()
+               .HasMaxLength(50);
 
-        builder.Property(e => e.ExpiresAt)
-            .IsRequired();
+        builder.Property(ut => ut.CreatedAt)
+               .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.Property(ut => ut.ExpiresAt)
+               .IsRequired();
 
         builder.Property(e => e.CreatedAt)
             .IsRequired()
@@ -28,17 +35,20 @@ public class UserTokenConfiguration : IEntityTypeConfiguration<UserToken>
         builder.Property(e => e.IsUsed)
             .HasColumnName("IsUse");
 
-        builder.HasOne(e => e.User)
-            .WithMany(u => u.UserTokens)
-            .HasForeignKey(e => e.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+        // Indexes
+        builder.HasIndex(ut => ut.Token)
+               .HasDatabaseName("IX_UserTokens_Token");
 
-        builder.HasIndex(e => e.Token)
-            .IsUnique()
-            .HasDatabaseName("IX_UserToken_Token");
+        builder.HasIndex(ut => ut.UserId)
+               .HasDatabaseName("IX_UserTokens_UserId");
 
-        builder.HasIndex(e => e.UserId)
-            .HasDatabaseName("IX_UserToken_UserId");
+        builder.HasIndex(ut => ut.TokenType)
+               .HasDatabaseName("IX_UserTokens_TokenType");
+
+        // Relationship
+        builder.HasOne(ut => ut.User)
+               .WithMany(u => u.UserTokens)
+               .HasForeignKey(ut => ut.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }
-
