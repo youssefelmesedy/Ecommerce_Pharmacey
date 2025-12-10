@@ -1,4 +1,5 @@
-﻿namespace Pharmacy.Domain.Entities;
+namespace Pharmacy.Domain.Entities;
+
 public class OrderItems
 {
     public Guid Id { get; set; }
@@ -9,9 +10,10 @@ public class OrderItems
     public Guid ProductId { get; set; }
     public Product? Product { get; set; }
 
-    public decimal Quantity { get; set; } = 0;
+    public int Quantity { get; set; } = 0;
     public decimal UnitPrice { get; set; } = 0;
+    public string? ProductName { get; set; }
 
-    // Totel = Quntity * Price
-    public decimal Total  => Quantity * UnitPrice;
+    // Total = Quantity * UnitPrice
+    public decimal Total => Quantity * UnitPrice;
 }

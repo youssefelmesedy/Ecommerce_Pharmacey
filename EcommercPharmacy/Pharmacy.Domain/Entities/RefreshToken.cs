@@ -1,13 +1,13 @@
-﻿namespace Pharmacy.Domain.Entities;
+namespace Pharmacy.Domain.Entities;
 
 public class RefreshToken
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Token { get; set; } = null!;
     public DateTime ExpiresAtUtc { get; set; }
     public DateTime CreatedAtUtc { get; set; }
     public string CreatedByIp { get; set; } = null!;
-    public DateTime? RevokedAtUtc { get; set; }   // ← التعديل هنا
+    public DateTime? RevokedAtUtc { get; set; }
     public string? RevokedByIp { get; set; }
     public string? ReplacedByToken { get; set; }
     public string? RevokedReason { get; set; }
@@ -20,4 +20,3 @@ public class RefreshToken
     // Navigation Property
     public User User { get; set; } = null!;
 }
-    
